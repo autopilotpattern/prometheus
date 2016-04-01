@@ -4,7 +4,7 @@
     {
       "name": "prometheus",
       "port": 9090,
-      "health": ["true"],
+      "health": ["curl", "-so", "/dev/null", "http://localhost:9090/metrics"],
       "poll": 10,
       "ttl": 25
     }
