@@ -38,6 +38,6 @@ Once you have Prometheus running you should be able to check its current status 
 
 
 ```bash
-$ prometheus=$(triton inst get prometheus_prometheus_1 | json -a ips.1)
-$ curl "http://${prometheus}:9090/metrics" | less # there's a lot of data!
+# pipe it to less because there's a lot of data!
+$ curl "http://$(triton ip prometheus_prometheus_1):9090/metrics" | less
 ```
