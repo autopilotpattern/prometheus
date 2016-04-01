@@ -1,0 +1,22 @@
+{
+  "consul": "{{ .CONSUL }}:8500",
+  "services": [
+    {
+      "name": "prometheus",
+      "port": 9090,
+      "health": ["curl", "-so", "/dev/null", "http://localhost:9090/metrics"],
+      "poll": 10,
+      "ttl": 25
+    }
+  ],
+  "backends": [
+    {
+      "name": "metrics",
+      "poll": 5,
+      "onChange": [
+        "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
+        "/etc/prometheus/prometheus.yml.ctmpl:/etc/prometheus/prometheus.yml:pkill -HUP prometheus"
+      ]
+    }
+  ]
+}
