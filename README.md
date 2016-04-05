@@ -1,12 +1,12 @@
 # Prometheus with the Autopilot Pattern
 
-This repo is an extension of the official [Prometheus.io](https://prometheus.io) Docker image, designed to be self-operating according to the autopilot pattern. This application demonstrates support for configuring Prometheus to be used as a metrics collector for applications using the Containerbuddy metrics endpoint.
+This repo is an extension of the official [Prometheus.io](https://prometheus.io) Docker image, designed to be self-operating according to the autopilot pattern. This application demonstrates support for configuring Prometheus to be used as a metrics collector for applications using the Containerbuddy telemetry endpoint.
 
 ### Using Prometheus with Containerbuddy
 
 The Dockerfile provided uses Containerbuddy in the Prometheus container to populate (and keep updated) the Prometheus configuration file with a list of targets.
 
-For targets, Containerbuddy supports a Prometheus-compatible metrics endpoint. If a `metrics` option is provided, Containerbuddy will expose a Prometheus HTTP client interface that can be used to scrape performance metrics. The metrics interface is advertised as a service to the discovery service similar to services configured via the Containerbuddy `services` block. Each sensor for the metrics service will run periodically and record values in the [Prometheus client library](https://github.com/prometheus/client_golang). A Prometheus server can then make HTTP requests to the metrics endpoint.
+For targets, Containerbuddy supports a Prometheus-compatible telemetry endpoint. If a `telemetry` option is provided, Containerbuddy will expose a Prometheus HTTP client interface that can be used to scrape performance telemetry. The telemetry interface is advertised as a service to the discovery service similar to services configured via the Containerbuddy `services` block. Each sensor for the telemetry service will run periodically and record values in the [Prometheus client library](https://github.com/prometheus/client_golang). A Prometheus server can then make HTTP requests to the telemetry endpoint.
 
 ### Run it!
 
@@ -34,10 +34,10 @@ prometheus_prometheus_1      /bin/containerbuddy   Up   0.0.0.0:9090->9090/tcp
 ```
 
 
-Once you have Prometheus running you should be able to check its current status by making an HTTP request to its own metrics endpoint:
+Once you have Prometheus running you should be able to check its current status by making an HTTP request to its own telemetry endpoint:
 
 
 ```bash
 # pipe it to less because there's a lot of data!
-$ curl "http://$(triton ip prometheus_prometheus_1):9090/metrics" | less
+$ curl "http://$(triton ip prometheus_prometheus_1):9090/telemetry" | less
 ```

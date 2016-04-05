@@ -24,9 +24,9 @@ scrape_configs:
     scrape_interval: 5s
     scrape_timeout: 10s
 
-    # metrics_path defaults to '/metrics'
+    metrics_path: /telemetry
     # scheme defaults to 'http'.
 
     target_groups:
-      - targets: [{{ if service "metrics" }}{{{{ range service "metrics" }}'{{.Address}}:{{.Port}}'{{end}} | join ","}}{{else}}'localhost:9090'{{end}}
+      - targets: [{{ if service "telemetry" }}{{{{ range service "telemetry" }}'{{.Address}}:{{.Port}}'{{end}} | join ","}}{{else}}'localhost:9090'{{end}}
       ]

@@ -11,7 +11,7 @@
   ],
   "backends": [
     {
-      "name": "metrics",
+      "name": "telemetry",
       "poll": 5,
       "onChange": [
         "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
