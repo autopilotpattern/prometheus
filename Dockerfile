@@ -27,6 +27,7 @@ ENV CONTAINERBUDDY file:///etc/containerbuddy.json
 # ref https://prometheus.io/docs/operating/configuration/
 # for details on building your own config
 COPY etc/prometheus.yml.ctmpl /etc/prometheus/prometheus.yml.ctmpl
+RUN chown -R prometheus:prometheus /etc/prometheus
 
 # Override the entrypoint to include Containerbuddy
 ENTRYPOINT []
