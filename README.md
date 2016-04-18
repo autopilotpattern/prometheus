@@ -5,7 +5,7 @@ This repo is an extension of the official [Prometheus.io](https://prometheus.io)
 [![DockerPulls](https://img.shields.io/docker/pulls/autopilotpattern/prometheus.svg)](https://registry.hub.docker.com/u/autopilotpattern/prometheus/)
 [![DockerStars](https://img.shields.io/docker/stars/autopilotpattern/prometheus.svg)](https://registry.hub.docker.com/u/autopilotpattern/prometheus/)
 [![ImageLayers](https://badge.imagelayers.io/autopilotpattern/prometheus:latest.svg)](https://imagelayers.io/?images=autopilotpattern/prometheus:latest)
-[![Join the chat at https://gitter.im/autopilotpattern/prometheus](https://badges.gitter.im/autopilotpattern/prometheus.svg)](https://gitter.im/autopilotpattern/prometheus)
+[![Join the chat at https://gitter.im/autopilotpattern/general](https://badges.gitter.im/autopilotpattern/general.svg)](https://gitter.im/autopilotpattern/general)
 
 ### Using Prometheus with Containerbuddy
 
