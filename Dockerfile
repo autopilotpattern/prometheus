@@ -1,4 +1,4 @@
-FROM prom/prometheus
+FROM prom/prometheus:0.18.0
 # We're starting with the official base image, which is Alpine w/ glibc and
 # has WORKDIR set to /prometheus. We'll override the entrypoint and command
 
