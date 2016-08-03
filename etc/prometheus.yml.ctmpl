@@ -28,6 +28,6 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     target_groups:
-    {{ if service "telemetry" }} - targets: [{{range $i, $e := service "telemetry"}}{{if ne $i 0}},{{end}}'{{$e.Address}}:{{$e.Port}}'{{end}},'localhost:9090']
+    {{ if service "containerpilot" }} - targets: [{{range $i, $e := service "containerpilot"}}{{if ne $i 0}},{{end}}'{{$e.Address}}:{{$e.Port}}'{{end}},'localhost:9090']
     {{ else }} - targets: ['localhost:9090']
     {{ end }}
