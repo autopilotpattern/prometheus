@@ -24,7 +24,7 @@ scrape_configs:
     scrape_interval: 5s
     scrape_timeout: 10s
 
-    metrics_path: /telemetry
+    metrics_path: /metrics
     # scheme defaults to 'http'.
 
     target_groups:
