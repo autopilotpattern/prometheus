@@ -1,7 +1,7 @@
 # Prometheus demonstration of the autopilot pattern
 
 prometheus:
-    image: autopilotpattern/prometheus
+    image: autopilotpattern/prometheus:0.17.0-r1
     mem_limit: 1g
     restart: always
     labels:

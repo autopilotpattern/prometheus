@@ -1,5 +1,9 @@
 {
   "consul": "{{ .CONSUL }}:8500",
+  "onStart": [
+    "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
+    "/etc/prometheus/prometheus.yml.ctmpl:/etc/prometheus/prometheus.yml"
+  ],
   "services": [
     {
       "name": "prometheus",
