@@ -15,7 +15,7 @@
   ],
   "backends": [
     {
-      "name": "telemetry",
+      "name": "containerpilot",
       "poll": 5,
       "onChange": [
         "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
