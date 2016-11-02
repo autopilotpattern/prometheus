@@ -12,15 +12,5 @@
       "poll": 10,
       "ttl": 25
     }
-  ],
-  "backends": [
-    {
-      "name": "containerpilot",
-      "poll": 5,
-      "onChange": [
-        "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
-        "/etc/prometheus/prometheus.yml.ctmpl:/etc/prometheus/prometheus.yml:pkill -HUP prometheus"
-      ]
-    }
   ]
 }
