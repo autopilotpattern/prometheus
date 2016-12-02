@@ -5,11 +5,11 @@ This repo is an extension of the official [Prometheus.io](https://prometheus.io)
 [![DockerPulls](https://img.shields.io/docker/pulls/autopilotpattern/prometheus.svg)](https://registry.hub.docker.com/u/autopilotpattern/prometheus/)
 [![DockerStars](https://img.shields.io/docker/stars/autopilotpattern/prometheus.svg)](https://registry.hub.docker.com/u/autopilotpattern/prometheus/)
 
-### Using Prometheus with Containerbuddy
+### Using Prometheus with ContainerPilot
 
-The Dockerfile provided uses Containerbuddy in the Prometheus container to populate (and keep updated) the Prometheus configuration file with a list of targets.
+The Dockerfile provided uses ContainerPilot in the Prometheus container to populate (and keep updated) the Prometheus configuration file with a list of targets.
 
-For targets, Containerbuddy supports a Prometheus-compatible telemetry endpoint. If a `telemetry` option is provided, Containerbuddy will expose a Prometheus HTTP client interface that can be used to scrape performance telemetry. The telemetry interface is advertised as a service to the discovery service similar to services configured via the Containerbuddy `services` block. Each sensor for the telemetry service will run periodically and record values in the [Prometheus client library](https://github.com/prometheus/client_golang). A Prometheus server can then make HTTP requests to the telemetry endpoint.
+For targets, ContainerPilot supports a Prometheus-compatible telemetry endpoint. If a `telemetry` option is provided, ContainerPilot will expose a Prometheus HTTP client interface that can be used to scrape performance telemetry. The telemetry interface is advertised as a service to the discovery service similar to services configured via the ContainerPilot `services` block. Each sensor for the telemetry service will run periodically and record values in the [Prometheus client library](https://github.com/prometheus/client_golang). A Prometheus server can then make HTTP requests to the telemetry endpoint.
 
 ### Run it!
 
@@ -32,7 +32,7 @@ prometheus_consul_1          /bin/start -server    Up   53/tcp, 53/udp,
                                                         8301/udp, 8302/tcp,
                                                         8302/udp, 8400/tcp,
                                                         0.0.0.0:8500->8500/tcp
-prometheus_prometheus_1      /bin/containerbuddy   Up   0.0.0.0:9090->9090/tcp
+prometheus_prometheus_1      /bin/containerpilot   Up   0.0.0.0:9090->9090/tcp
                              /bin/prometheus...
 ```
 

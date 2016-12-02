@@ -22,12 +22,11 @@ scrape_configs:
 
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
-    scrape_timeout: 10s
 
     metrics_path: /metrics
     # scheme defaults to 'http'.
 
-    target_groups:
+    static_configs:
     {{ if service "containerpilot" }} - targets: [{{range $i, $e := service "containerpilot"}}{{if ne $i 0}},{{end}}'{{$e.Address}}:{{$e.Port}}'{{end}},'localhost:9090']
     {{ else }} - targets: ['localhost:9090']
     {{ end }}
