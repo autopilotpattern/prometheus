@@ -7,7 +7,7 @@ global:
   # Attach these labels to any time series or alerts when communicating with
   # external systems (federation, remote storage, Alertmanager).
   external_labels:
-      monitor: 'codelab-monitor'
+      monitor: 'prometheus-monitor'
 
 # Load and evaluate rules in this file every 'evaluation_interval' seconds.
 rule_files:
@@ -18,7 +18,7 @@ rule_files:
 # Here it's Prometheus itself.
 scrape_configs:
   # The job name is added as a label `job=<job_name>` to any timeseries scraped from this config.
-  - job_name: 'prometheus'
+  - job_name: 'containerpilot'
 
     # Override the global default and scrape targets from this job every 5 seconds.
     scrape_interval: 5s
@@ -26,7 +26,11 @@ scrape_configs:
     metrics_path: /metrics
     # scheme defaults to 'http'.
 
+    consul_sd_configs:
+     - server: '{{env "CONSUL"}}:8500'
+       services: ['containerpilot']
+
+  - job_name: 'prometheus'
+    metrics_path: /metrics
     static_configs:
-    {{ if service "containerpilot" }} - targets: [{{range $i, $e := service "containerpilot"}}{{if ne $i 0}},{{end}}'{{$e.Address}}:{{$e.Port}}'{{end}},'localhost:9090']
-    {{ else }} - targets: ['localhost:9090']
-    {{ end }}
+     - targets: ['localhost:9090']
