@@ -7,9 +7,10 @@ FROM alpine:3.4
 RUN apk add --update curl
 
 # add Prometheus. alas, the Prometheus developers provide no checksum
-RUN export prom=prometheus-1.3.0.linux-amd64 \
-    && curl -Lso /tmp/${prom}.tar.gz https://github.com/prometheus/prometheus/releases/download/v1.3.0/${prom}.tar.gz \
-    && tar zxf /tmp/${prom}.tar.gz -C /tmp \
+RUN export PROM_VER=1.5.2 \
+    && export prom=prometheus-${PROM_VER}.linux-amd64 \
+    && curl -Lso /tmp/prometheus.tar.gz https://github.com/prometheus/prometheus/releases/download/v${PROM_VER}/${prom}.tar.gz \
+    && tar zxf /tmp/prometheus.tar.gz -C /tmp \
     && mkdir /etc/prometheus /usr/share/prometheus \
     && mv /tmp/${prom}/prometheus /bin/prometheus \
     && mv /tmp/${prom}/promtool /bin/promtool \
@@ -17,26 +18,27 @@ RUN export prom=prometheus-1.3.0.linux-amd64 \
     && mv /tmp/${prom}/consoles /usr/share/prometheus/consoles \
     && mv /tmp/${prom}/console_libraries /usr/share/prometheus/console_libraries \
     && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
-    && rm /tmp/prometheus-1.3.0.linux-amd64.tar.gz
+    && rm /tmp/prometheus.tar.gz
 
 # get consul-template
-RUN curl -Lso /tmp/consul-template_0.14.0_linux_amd64.zip https://releases.hashicorp.com/consul-template/0.14.0/consul-template_0.14.0_linux_amd64.zip \
-    && echo "7c70ea5f230a70c809333e75fdcff2f6f1e838f29cfb872e1420a63cdf7f3a78" /tmp/consul-template_0.14.0_linux_amd64.zip \
-    && unzip /tmp/consul-template_0.14.0_linux_amd64.zip \
-    && mv consul-template /bin \
-    && rm /tmp/consul-template_0.14.0_linux_amd64.zip
+
+RUN export CONSUL_TEMPLATE_VERSION=0.18.0 \
+    && export CONSUL_TEMPLATE_CHECKSUM=f7adf1f879389e7f4e881d63ef3b84bce5bc6e073eb7a64940785d32c997bc4b \
+    && curl --retry 7 --fail -Lso /tmp/consul-template.zip "https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip" \
+    && echo "${CONSUL_TEMPLATE_CHECKSUM}  /tmp/consul-template.zip" | sha256sum -c \
+    && unzip /tmp/consul-template.zip -d /usr/local/bin \
+    && rm /tmp/consul-template.zip
 
 # Add Containerpilot and set its configuration
-ENV CONTAINERPILOT_VERSION 2.4.4
+ENV CONTAINERPILOT_VER 2.7.2
 ENV CONTAINERPILOT file:///etc/containerpilot.json
 
-RUN export CONTAINERPILOT_CHECKSUM=6194ee482dae95844046266dcec2150655ef80e9 \
-    && export archive=containerpilot-${CONTAINERPILOT_VERSION}.tar.gz \
-    && curl -Lso /tmp/${archive} \
-         "https://github.com/joyent/containerpilot/releases/download/${CONTAINERPILOT_VERSION}/${archive}" \
-    && echo "${CONTAINERPILOT_CHECKSUM}  /tmp/${archive}" | sha1sum -c \
-    && tar zxf /tmp/${archive} -C /usr/local/bin \
-    && rm /tmp/${archive}
+RUN export CONTAINERPILOT_CHECKSUM=e886899467ced6d7c76027d58c7f7554c2fb2bcc \
+    && curl -Lso /tmp/containerpilot.tar.gz \
+         "https://github.com/joyent/containerpilot/releases/download/${CONTAINERPILOT_VER}/containerpilot-${CONTAINERPILOT_VER}.tar.gz" \
+    && echo "${CONTAINERPILOT_CHECKSUM}  /tmp/containerpilot.tar.gz" | sha1sum -c \
+    && tar zxf /tmp/containerpilot.tar.gz -C /usr/local/bin \
+    && rm /tmp/containerpilot.tar.gz
 
 # Add Containerpilot configuration
 COPY etc/containerpilot.json /etc
@@ -46,13 +48,9 @@ ENV CONTAINERPILOT file:///etc/containerpilot.json
 # ref https://prometheus.io/docs/operating/configuration/
 # for details on building your own config
 COPY etc/prometheus.yml.ctmpl /etc/prometheus/prometheus.yml.ctmpl
+COPY bin /bin
 
 # Override the entrypoint to include Containerpilot
 WORKDIR /prometheus
 ENTRYPOINT []
-CMD ["/usr/local/bin/containerpilot", \
-     "/bin/prometheus", \
-     "-config.file=/etc/prometheus/prometheus.yml", \
-     "-storage.local.path=/prometheus", \
-     "-web.console.libraries=/etc/prometheus/console_libraries", \
-     "-web.console.templates=/etc/prometheus/consoles" ]
+CMD "/bin/start.sh"
