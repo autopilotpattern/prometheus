@@ -1,0 +1,24 @@
+version: '2.1'
+services:
+  prometheus:
+      image: autopilotpattern/prometheus:${TAG:-latest}
+      mem_limit: 1g
+      restart: always
+      network_mode: bridge
+      ports:
+        - 9090
+
+
+  consul:
+    image: autopilotpattern/consul:0.7.2-r0.8
+    command: >
+      /usr/local/bin/containerpilot
+      /bin/consul agent -server
+        -bootstrap-expect 1
+        -config-dir=/etc/consul
+        -ui-dir /ui
+    restart: always
+    mem_limit: 128m
+    ports:
+      - 8500
+    network_mode: bridge
