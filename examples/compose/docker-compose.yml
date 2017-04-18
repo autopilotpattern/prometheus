@@ -4,7 +4,11 @@ services:
       image: autopilotpattern/prometheus:${TAG:-latest}
       mem_limit: 1g
       restart: always
+      environment:
+        - CONSUL=consul
       network_mode: bridge
+      links:
+        - consul:consul
       ports:
         - 9090
 
