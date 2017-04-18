@@ -14,8 +14,8 @@ from testcases import AutopilotPatternTest, WaitTimeoutError, \
 import requests
 
 
-class RedisStackTest(AutopilotPatternTest):
-    project_name = 'prometheus'
+class PrometheusStackTest(AutopilotPatternTest):
+    project_name = 'prom'
 
     def setUp(self):
         if 'COMPOSE_FILE' in os.environ and 'triton' in os.environ['COMPOSE_FILE']:
@@ -26,11 +26,9 @@ class RedisStackTest(AutopilotPatternTest):
             os.environ['CONSUL'] = self.consul_cns
 
     def test_prometheus(self):
-        ###############################################
-        # scale up
-        ###############################################
         self.instrument(self.wait_for_containers,
                         {'prometheus': 1, 'consul': 1}, timeout=300)
+        self.instrument(self.wait_for_service, 'prometheus', count=1, timeout=300)
 
     def wait_for_containers(self, expected={}, timeout=30):
         """
