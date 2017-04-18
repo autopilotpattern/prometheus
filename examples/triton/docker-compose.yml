@@ -17,7 +17,7 @@ services:
       network_mode: bridge
       ports:
         # You may not want these port declarations for production. Without them, Prometheus will only 
-        # listen on the private network. This will also result in a public redis CNS record being created, 
+        # listen on the private network. This will also result in a public prometheus CNS record being created, 
         # in the triton.zone domain.
         - 9090
       env_file: _env
@@ -41,5 +41,5 @@ services:
       # As above, this port delcarations should not be made for production.
       - 8500
     labels:
-      - triton.cns.services=redis-consul
+      - triton.cns.services=prometheus-consul
     network_mode: bridge
