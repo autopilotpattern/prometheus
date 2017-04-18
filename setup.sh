@@ -97,7 +97,7 @@ check() {
         exit 1
     fi
 
-    echo CONSUL=consul.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com > _env
+    echo CONSUL=prometheus-consul.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com > _env
     echo TRITON_ACCOUNT=${TRITON_ACCOUNT} >> _env
     echo TRITON_DC=${TRITON_DC} >> _env
 }
