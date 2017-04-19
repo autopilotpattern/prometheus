@@ -34,3 +34,24 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
      - targets: ['localhost:9090']
+
+
+  {{ $triton_tls_configured := env "TLSCA_PATH" }}
+  {{ if $triton_tls_configured }}
+  - job_name: 'triton'
+
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+    triton_sd_configs:
+     - account: '{{env "TRITON_ACCOUNT"}}'
+       dns_suffix: 'cmon.{{env "TRITON_DC"}}.triton.zone'
+       endpoint: 'cmon.{{env "TRITON_DC"}}.triton.zone'
+       tls_config:
+        - ca_file: '{{env "TLSCA_PATH"}}'
+          cert_file: '{{env "TLSCERT_PATH"}}'
+          key_file: '{{env "TLSKEY_PATH"}}'
+          insecure_skip_verify: true
+          # server_name: 
+  {{ end }}
+
