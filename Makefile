@@ -14,8 +14,10 @@ tag := branch-$(shell basename $(GIT_BRANCH))
 image := $(namespace)/prometheus
 testImage := $(namespace)/prometheus-testrunner
 
-dockerLocal := DOCKER_HOST= DOCKER_TLS_VERIFY= DOCKER_CERT_PATH= docker
-composeLocal := DOCKER_HOST= DOCKER_TLS_VERIFY= DOCKER_CERT_PATH= docker-compose
+#dockerLocal := DOCKER_HOST= DOCKER_TLS_VERIFY= DOCKER_CERT_PATH= docker
+dockerLocal := docker
+#composeLocal := DOCKER_HOST= DOCKER_TLS_VERIFY= DOCKER_CERT_PATH= docker-compose
+composeLocal := docker-compose
 
 ## Display this help message
 help:
@@ -54,8 +56,8 @@ ship: tag
 
 ## Pull the container images from the Docker Hub
 pull:
-	docker pull $(image):$(tag)
-	docker pull $(testImage):$(tag)
+	$(dockerLocal) pull $(image):$(tag)
+	$(dockerLocal) pull $(testImage):$(tag)
 
 $(DOCKER_CERT_PATH)/key.pub:
 	ssh-keygen -y -f $(DOCKER_CERT_PATH)/key.pem > $(DOCKER_CERT_PATH)/key.pub
@@ -83,7 +85,7 @@ stop:
 	cd examples/compose && TAG=$(tag) docker-compose -p prometheus rm -f || true
 
 test-image:
-	docker build -f test/Dockerfile .
+	$(dockerLocal) build -f test/Dockerfile .
 
 run-test-image-local:
 	$(dockerLocal) run -it --rm \

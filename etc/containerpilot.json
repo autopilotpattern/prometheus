@@ -5,9 +5,22 @@
     {
       "name": "prometheus",
       "port": 9090,
-      "health": ["curl", "-so", "/dev/null", "http://localhost:9090/metrics"],
+      "health": ["curl", "-fso", "/dev/null", "http://localhost:9090/metrics"],
       "poll": 10,
       "ttl": 25
     }
+  ],
+  "coprocesses": [{{ if .CONSUL_AGENT }}
+    {
+      "name": "consul-agent (host:{{ .CONSUL }})",
+      "command": ["/usr/local/bin/consul", "agent",
+                  "-data-dir=/data",
+                  "-config-dir=/config",
+                  "-rejoin",
+                  "-retry-join", "{{ .CONSUL }}",
+                  "-retry-max", "10",
+                  "-retry-interval", "10s"],
+      "restarts": "unlimited"
+    }{{ end }}
   ]
 }
