@@ -19,13 +19,12 @@ services:
         # listen on the private network. This will also result in a public prometheus CNS record being created, 
         # in the triton.zone domain.
         - 9090
-      env_file: _env
       environment:
         - CONSUL_AGENT=1
+      env_file: _env
 
 
-  # Consul acts as our service catalog and is used to coordinate global state among 
-  # our Redis containers
+  # Consul is the service catalog 
   consul:
     image: autopilotpattern/consul:0.7.2-r0.8
     command: >

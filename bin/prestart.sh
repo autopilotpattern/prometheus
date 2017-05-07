@@ -1,7 +1,10 @@
-#!/bin/sh
+#!/bin/bash
 
-# setup TLS based on env vars provided via docker run
-if [ -n $TLSCA -a -n $TLSCERT -a -n $TLSKEY ]
+# setup Triton auth creds for discovery
+if [ -n ${!TRITON_CREDS_PATH} ] \
+    && [ -n ${!TRITON_CA} ] \
+    && [ -n ${!TRITON_CERT} ] \
+    && [ -n ${!TRITON_KEY} ]
 then
     mkdir -p ${TRITON_CREDS_PATH}
     echo -e "${TRITON_CA}" | tr '#' '\n' > ${TRITON_CREDS_PATH}/ca.pem

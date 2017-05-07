@@ -4,7 +4,9 @@ FROM alpine:3.4
 # artisanally hand-rolling curl and the rest of our stack we'll just use
 # Alpine so we can use `docker build`.
 
-RUN apk add --update curl
+RUN apk add --update \
+    bash \
+    curl
 
 
 # Add Prometheus. alas, the Prometheus developers provide no checksum
@@ -75,8 +77,9 @@ COPY bin /bin
 
 # Override the entrypoint to include ContainerPilot
 WORKDIR /prometheus
-ENTRYPOINT ["/usr/local/bin/containerpilot"]
-CMD ["/bin/prometheus" ,\
+ENTRYPOINT []
+CMD ["/usr/local/bin/containerpilot", \
+     "/bin/prometheus" ,\
      "-config.file=/etc/prometheus/prometheus.yml", \
      "-storage.local.path=/prometheus", \
      "-web.console.libraries=/etc/prometheus/console_libraries", \
