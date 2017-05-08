@@ -99,7 +99,7 @@ check() {
 
     echo '# Prometheus discovery for Triton' > _env
     echo TRITON_ACCOUNT=${TRITON_ACCOUNT} >> _env
-    echo TRITON_DC=${TRITON_DC} >> _env
+    echo '#TRITON_DC= # Leave empty and Autopilot Pattern Prometheus will automatically detect the DC' >> _env
     echo >> _env
 
     echo '# Prometheus authentication for Triton' >> _env
