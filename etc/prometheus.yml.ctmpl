@@ -27,7 +27,7 @@ scrape_configs:
     # scheme defaults to 'http'.
 
     consul_sd_configs:
-     - server: '{{env "CONSUL"}}:8500'
+     - server: '{{ if .CONSUL_AGENT }}localhost{{ else }}{{ if .CONSUL }}{{ .CONSUL }}{{ else }}consul{{ end }}{{ end }}:8500'
        services: ['containerpilot']
 
   - job_name: 'prometheus'

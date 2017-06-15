@@ -14,7 +14,7 @@ prometheus:
 # Start with a single host which will bootstrap the cluster.
 # In production we'll want to use an HA cluster.
 consul:
-    image: progrium/consul:latest
+    image: autopilotpattern/consul:0.7.2-r0.8
     restart: always
     mem_limit: 128m
     expose:
@@ -28,4 +28,10 @@ consul:
        - 127.0.0.1
     labels:
       - triton.cns.services=consul
-    command: -server -bootstrap -ui-dir /ui
+    command: >
+      /usr/local/bin/containerpilot
+      /bin/consul agent -server
+        -config-dir=/etc/consul
+        -log-level=err
+        -bootstrap-expect 1
+        -ui-dir /ui
