@@ -10,6 +10,8 @@ prometheus:
       - consul:consul
     ports:
       - "9090:9090"
+    dns:
+       - 127.0.0.1
 
 consul:
     extends:

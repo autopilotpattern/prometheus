@@ -1,16 +1,55 @@
 {
-  "consul": "{{ .CONSUL }}:8500",
-  "preStart": [
-    "consul-template", "-once", "-consul", "{{ .CONSUL }}:8500", "-template",
-    "/etc/prometheus/prometheus.yml.ctmpl:/etc/prometheus/prometheus.yml"
-  ],
-  "services": [
+  "consul": "{{ if .CONSUL_AGENT }}localhost{{ else }}{{ .CONSUL | default "consul" }}{{ end }}:8500",
+  "jobs": [
+    {
+      "name": "setup-config",
+      "exec": [
+        "consul-template", "-once", "-consul", "{{ if .CONSUL_AGENT }}localhost{{ else }}{{ .CONSUL | default "consul" }}{{ end }}:8500",
+        "-template", "/etc/prometheus/prometheus.yml.ctmpl:/etc/prometheus/prometheus.yml"
+      ]{{ if .CONSUL_AGENT }},
+      "when": {
+        "source": "consul-agent",
+        "once": "healthy"
+      }{{ end }}
+    },
     {
       "name": "prometheus",
       "port": 9090,
-      "health": ["curl", "-so", "/dev/null", "http://localhost:9090/metrics"],
-      "poll": 10,
-      "ttl": 25
+      "exec": [
+        "/bin/prometheus",
+        "-config.file=/etc/prometheus/prometheus.yml",
+        "-storage.local.path=/prometheus",
+        "-web.console.libraries=/etc/prometheus/console_libraries",
+        "-web.console.templates=/etc/prometheus/consoles"
+      ],
+      "health": {
+        "exec": "curl -so /dev/null http://localhost:9090/metrics",
+        "interval": 10,
+        "ttl": 25
+      },
+      "when": {
+        "source": "setup-config",
+        "once": "exitSuccess"
+      },
+      "restarts": "unlimited"
+    }{{ if .CONSUL_AGENT }},
+    {
+      "name": "consul-agent",
+      "exec": ["/usr/local/bin/consul", "agent",
+                  "-data-dir=/data",
+                  "-config-dir=/config",
+                  "-log-level=err",
+                  "-rejoin",
+                  "-retry-join", "{{ .CONSUL | default "consul" }}",
+                  "-retry-max", "10",
+                  "-retry-interval", "10s"],
+      "health": {
+        "exec": "curl -so /dev/null http://localhost:8500",
+        "interval": 10,
+        "ttl": 25
+      },
+      "restarts": "unlimited"
     }
+    {{ end }}
   ]
 }
