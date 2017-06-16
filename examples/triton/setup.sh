@@ -97,7 +97,22 @@ check() {
         exit 1
     fi
 
-    echo CONSUL=consul.svc.${TRITON_ACCOUNT}.${TRITON_DC}.cns.joyent.com > _env
+
+    echo '# Prometheus discovery for Triton' > _env
+    echo TRITON_ACCOUNT=${TRITON_ACCOUNT} >> _env
+    echo '#TRITON_DC= # Leave empty and Autopilot Pattern Prometheus will automatically detect the DC' >> _env
+    echo >> _env
+
+    echo '# Prometheus authentication for Triton' >> _env
+    TRITON_CREDS_PATH=/root/.triton
+    echo TRITON_CREDS_PATH=${TRITON_CREDS_PATH} >> _env
+    echo TRITON_CA=$(cat "${DOCKER_CERT_PATH}"/ca.pem | tr '\n' '#') >> _env
+    echo TRITON_CA_PATH=${TRITON_CREDS_PATH}/ca.pem >> _env
+    echo TRITON_KEY=$(cat "${DOCKER_CERT_PATH}"/key.pem | tr '\n' '#') >> _env
+    echo TRITON_KEY_PATH=${TRITON_CREDS_PATH}/key.pem >> _env
+    echo TRITON_CERT=$(cat "${DOCKER_CERT_PATH}"/cert.pem | tr '\n' '#') >> _env
+    echo TRITON_CERT_PATH=${TRITON_CREDS_PATH}/cert.pem >> _env
+    echo >> _env
 }
 
 # ---------------------------------------------------
