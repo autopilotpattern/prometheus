@@ -1,7 +1,7 @@
 # my global config
 global:
   scrape_interval:     15s # By default, scrape targets every 15 seconds.
-  evaluation_interval: 15s # By default, scrape targets every 15 seconds.
+  evaluation_interval: 15s # By default, evaluate rules every 15 seconds.
   # scrape_timeout is set to the global default (10s).
 
   # Attach these labels to any time series or alerts when communicating with
@@ -26,11 +26,37 @@ scrape_configs:
     metrics_path: /metrics
     # scheme defaults to 'http'.
 
+    {{ $consul_agent := env "CONSUL_AGENT" }}
+    {{ $consul := env "CONSUL" }}
     consul_sd_configs:
-     - server: '{{ if .CONSUL_AGENT }}localhost{{ else }}{{ if .CONSUL }}{{ .CONSUL }}{{ else }}consul{{ end }}{{ end }}:8500'
+     - server: '{{ if $consul_agent }}localhost{{ else }}{{ if $consul }}{{ $consul }}{{ else }}consul{{ end }}{{ end }}:8500'
        services: ['containerpilot']
 
   - job_name: 'prometheus'
     metrics_path: /metrics
     static_configs:
      - targets: ['localhost:9090']
+
+  {{ $triton_tls_configured := env "TRITON_CREDS_PATH" }}
+  {{ if $triton_tls_configured }}
+  - job_name: 'triton'
+    scheme: https
+    tls_config:
+      ca_file: '{{env "TRITON_CA_PATH"}}'
+      cert_file: '{{env "TRITON_CERT_PATH"}}'
+      key_file: '{{env "TRITON_KEY_PATH"}}'
+      insecure_skip_verify: true
+    triton_sd_configs:
+      - account: '{{env "TRITON_ACCOUNT"}}'
+        dns_suffix: 'cmon.{{env "TRITON_DC"}}.triton.zone'
+        endpoint: 'cmon.{{env "TRITON_DC"}}.triton.zone'
+        version: 1
+        tls_config:
+          ca_file: '{{env "TRITON_CA_PATH"}}'
+          cert_file: '{{env "TRITON_CERT_PATH"}}'
+          key_file: '{{env "TRITON_KEY_PATH"}}'
+          insecure_skip_verify: true
+    relabel_configs:
+      - source_labels: [__meta_triton_machine_alias]
+        target_label: instance
+  {{ end }}

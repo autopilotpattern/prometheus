@@ -4,7 +4,7 @@ FROM alpine:3.6
 # artisanally hand-rolling curl and the rest of our stack we'll just use
 # Alpine so we can use `docker build`.
 
-RUN apk add --update curl
+RUN apk add --update curl bash
 
 # add Prometheus. alas, the Prometheus developers provide no checksum
 RUN export PROM_VERSION=1.7.1 \
@@ -22,21 +22,30 @@ RUN export PROM_VERSION=1.7.1 \
     && ln -s /usr/share/prometheus/console_libraries /usr/share/prometheus/consoles/ /etc/prometheus/ \
     && rm /tmp/prometheus-${PROM_VERSION}.linux-amd64.tar.gz
 
-# get consul-template
-RUN curl -Lso /tmp/consul-template_0.14.0_linux_amd64.zip https://releases.hashicorp.com/consul-template/0.14.0/consul-template_0.14.0_linux_amd64.zip \
-    && echo "7c70ea5f230a70c809333e75fdcff2f6f1e838f29cfb872e1420a63cdf7f3a78  /tmp/consul-template_0.14.0_linux_amd64.zip" | sha256sum -c \
-    && unzip /tmp/consul-template_0.14.0_linux_amd64.zip \
-    && mv consul-template /bin \
-    && rm /tmp/consul-template_0.14.0_linux_amd64.zip
-
-# get consul-agent
-RUN export CONSUL_VERSION=0.7.0 \
-    && export CONSUL_CHECKSUM=b350591af10d7d23514ebaa0565638539900cdb3aaa048f077217c4c46653dd8 \
+# Install Consul
+# Releases at https://releases.hashicorp.com/consul
+RUN set -ex \
+    && export CONSUL_VERSION=0.7.5 \
+    && export CONSUL_CHECKSUM=40ce7175535551882ecdff21fdd276cef6eaab96be8a8260e0599fadb6f1f5b8 \
     && curl --retry 7 --fail -vo /tmp/consul.zip "https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip" \
     && echo "${CONSUL_CHECKSUM}  /tmp/consul.zip" | sha256sum -c \
     && unzip /tmp/consul -d /usr/local/bin \
     && rm /tmp/consul.zip \
+    # Create empty directories for Consul config and data \
+    && mkdir -p /etc/consul \
+    && mkdir -p /var/lib/consul \
     && mkdir /config
+
+
+# Install Consul template
+# Releases at https://releases.hashicorp.com/consul-template/
+RUN set -ex \
+    && export CONSUL_TEMPLATE_VERSION=0.18.0 \
+    && export CONSUL_TEMPLATE_CHECKSUM=f7adf1f879389e7f4e881d63ef3b84bce5bc6e073eb7a64940785d32c997bc4b \
+    && curl --retry 7 --fail -Lso /tmp/consul-template.zip "https://releases.hashicorp.com/consul-template/${CONSUL_TEMPLATE_VERSION}/consul-template_${CONSUL_TEMPLATE_VERSION}_linux_amd64.zip" \
+    && echo "${CONSUL_TEMPLATE_CHECKSUM}  /tmp/consul-template.zip" | sha256sum -c \
+    && unzip /tmp/consul-template.zip -d /usr/local/bin \
+    && rm /tmp/consul-template.zip
 
 # Add Containerpilot and set its configuration
 ENV CONTAINERPILOT_VERSION 3.0.0
@@ -58,6 +67,7 @@ ENV CONTAINERPILOT /etc/containerpilot.json
 # ref https://prometheus.io/docs/operating/configuration/
 # for details on building your own config
 COPY etc/prometheus.yml.ctmpl /etc/prometheus/prometheus.yml.ctmpl
+COPY bin /bin
 
 # Override the entrypoint to include Containerpilot
 WORKDIR /prometheus
