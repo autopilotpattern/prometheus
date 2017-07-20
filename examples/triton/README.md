@@ -16,5 +16,5 @@ See the [README](../../README.md) for details on environment variables in `_env`
 Start everything:
 
 ```bash
-triton-docker up -d
+triton-compose up -d
 ```
