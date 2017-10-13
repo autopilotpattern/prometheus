@@ -27,13 +27,8 @@ Creating prometheus_consul_1
 $ docker-compose ps
 Name                         Command           State    Ports
 --------------------------------------------------------------------------------
-prometheus_consul_1          /bin/start -server    Up   53/tcp, 53/udp,
-                             -bootst ...                8300/tcp, 8301/tcp,
-                                                        8301/udp, 8302/tcp,
-                                                        8302/udp, 8400/tcp,
-                                                        0.0.0.0:8500->8500/tcp
-prometheus_prometheus_1      /bin/containerpilot   Up   0.0.0.0:9090->9090/tcp
-                             /bin/prometheus...
+triton_consul_1       /usr/local/bin/containerpi ...   Up      53/tcp, 53/udp, 8300/tcp, 8301/tcp, 8301/udp, 8302/tcp, 8302/udp, 8400/tcp, 0.0.0.0:8500->8500/tcp
+triton_prometheus_1   /usr/local/bin/containerpilot    Up      0.0.0.0:9090->9090/tcp
 ```
 
 
@@ -42,5 +37,5 @@ Once you have Prometheus running you should be able to check its current status 
 
 ```bash
 # pipe it to less because there's a lot of data!
-$ curl "http://$(triton ip prometheus_prometheus_1):9090/telemetry" | less
+$ curl "http://$(triton ip triton_prometheus_1):9090/metrics" | less
 ```
